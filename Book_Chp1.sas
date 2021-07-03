@@ -15,7 +15,7 @@ run;
 /* Infile datalines delimiter=","; */
 data weight_club;
 	Infile datalines delimiter=",";
-	length Name $14 IdNumber 4;
+	length Name $14 IdNumber 4;  /*This is needed*/
 	input IdNumber Name $ Team $ StartWeight EndWeight;
 	Loss = StartWeight - EndWeight;
 	datalines;
