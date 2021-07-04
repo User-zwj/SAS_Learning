@@ -68,17 +68,16 @@ proc print data=club2;
 run;
 
 /* Page49 - Program: Skipping Fields When Reading Data Records */
-/* The numbers don't correspond??? */
 data club2;
-	input Team $ 26 Name $7-23 StartWeight 33-35 EndWeight 37-39;
+	input Team $ 25 Name $6-23 StartWeight 32-34 EndWeight 36-38;
 	datalines;
-	1023 David Shaw         red    189 165
-	1049 Amelia Serrano     yellow 145 124
-	1219 Alan Nance         red    210 192
-	1246 Ravi Sinha         yellow 194 177
-	1078 Ashley McKnight    red    127 118
-	1221 Jim Brown          yellow 220
-	;
+1023 David Shaw         red    189 165
+1049 Amelia Serrano     yellow 145 124
+1219 Alan Nance         red    210 192
+1246 Ravi Sinha         yellow 194 177
+1078 Ashley McKnight    red    127 118
+1221 Jim Brown          yellow 220
+;
 	
 proc print data=club2;
 	title "Weight Club Members";
@@ -200,4 +199,15 @@ proc print data=scores;
 run;
 
 
+/* Currency sign */
+data money;
+	input ID Money dollar5.;
+	datalines;
+1 $1000
+2 $1200
+3 $2913
+;
 
+proc print data=money;
+	title 'Cash';
+run;
