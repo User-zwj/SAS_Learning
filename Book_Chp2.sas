@@ -81,10 +81,34 @@ data weight_club;
 run;
 
 /* 2. Data in an External File */
-data cars;
-	infile "/home/u58907790/sasuser.v94/excel_files/salary.csv" delimiter=',';
+/* Not working */
+data salary;
+	infile "/home/u58907790/sasuser.v94/excel_files/salary.csv" delimiter=',' firstobs=2;
+	length employee $8;
 	input employee $1-7 salary;    /*???*/
 run;
+
+/* Not working */
+proc import file="/home/u58907790/sasuser.v94/excel_files/salary.csv"
+    out=work.salary
+    dbms=csv;
+run;
+
+proc print data=work.salary;
+run;
+
+/* Works */
+FILENAME REFFILE '/home/u58907790/sasuser.v94/excel_files/salary.csv';
+PROC IMPORT DATAFILE=REFFILE
+	DBMS=CSV
+	OUT=WORK.IMPORT;
+	GETNAMES=YES;
+RUN;
+
+PROC print DATA=WORK.IMPORT; RUN;
+
+
+
 	
 /* 3. Data in a SAS Data Set */
 /* Statement: SET, MERGE, MODIFY, UPDATE */
