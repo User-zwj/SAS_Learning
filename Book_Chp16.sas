@@ -1,5 +1,9 @@
 libname mylib '/home/u58907790/sasuser.v94/sas_tables';
 
+/* Set: first dominates */
+/* Append: force option; Var in 2nd is del; base is replaced by the new*/
+
+
 /* Page 242 - Using the SET statement */
 options pagesize=60 linesize=80 pageno=1 nodate;
 
@@ -15,7 +19,7 @@ data sales;
 ;
 
 proc print data=sales;
-title ’Sales Department Employees’;
+	title ’Sales Department Employees’;
 run;
 
 data customer_support;
@@ -30,7 +34,7 @@ data customer_support;
 ;
 
 proc print data=customer_support;
-title ’Customer Support Department Employees’;
+	title ’Customer Support Department Employees’;
 run;
 
 /* Page244 */
@@ -55,7 +59,7 @@ data security;
 ;
 
 proc print data=security;
-title ’Security Department Employees’;
+	title ’Security Department Employees’;
 run;
 
 data dept1_3;
@@ -68,4 +72,157 @@ proc print data=dept1_3;
 run;
 
 /* Page246 - Variables with Different Attributes */
-/* Page247 -  */
+/* Page247 - Variables with different types */
+/* EmployeeID is numeric here */
+data accounting;
+	input EmployeeID 1-9 Name $11-29 Gender $30 @32 HireDate date9. Salary;
+	format HireDate date9.;
+	datalines;
+634875680 Gardinski, Barbara F 29may1998 49800
+824576630 Robertson, Hannah  F 14mar1995 52700
+744826703 Gresham, Jean      F 28apr1992 54000
+824447605 Kruize, Ronald     M 23may1994 49200
+988674342 Linzer, Fritz      M 23jul1992 50400
+;
+
+proc print data=accounting;
+	title ’Accounting Department Employees’;
+run;
+
+data dept1_4;
+	set sales customer_support security accounting;
+run;
+
+/* Page248 - Changing the Type of a Variable */
+/* Change the type of EmployeeID from numeric to character */
+/* Drop is applied before rename option */
+data new_accounting (rename=(a=EmployeeID)drop=EmployeeID); 
+	set accounting; 
+	a=put(EmployeeID, 9.); 
+run;
+
+proc print data=new_accounting;
+	title ’New Accounting Department Employees’;
+run;
+
+proc datasets library=work; 
+	contents data=new_accounting;
+run;
+
+/* Page249 -  */
+data dept1_4;
+	set sales customer_support security new_accounting;
+run;
+
+proc print data=dept1_4;
+	title ’Employees in Sales, Customer Support, Security,’;
+	title2 ’and Accounting Departments’;
+run;
+
+/* Page250 - Variables with Different Formats */
+/* First data set dominates */
+/* HireDate */
+data shipping;
+	input employeeID $1-9 Name $11-29 Gender $30 @32 HireDate date9. @42 Salary;
+	format HireDate date7.
+	Salary comma6.;
+	datalines;
+688774609 Carlton, Susan     F 28jan1995 29200
+922448328 Hoffmann, Gerald   M 12oct1997 27600
+544909752 DePuis, David      M 23aug1994 32900
+745609821 Hahn, Kenneth      M 23aug1994 33300
+634774295 Landau, Jennifer   F 30apr1996 32900
+;
+
+proc print data=shipping;
+	title ’Shipping Department Employees’;
+run;
+
+/* Page251 */
+data dept1_5;
+	set sales customer_support security new_accounting shipping;
+run;
+
+proc print data=dept1_5;
+	title ’Employees in Sales, Customer Support, Security,’;
+	title2 ’Accounting, and Shipping Departments’;
+run;
+
+/* Page252 */
+/* First data set dominates */
+data dept5_1;
+	set shipping new_accounting security customer_support sales;
+run;
+
+proc print data=dept5_1;
+	title ’Employees in Shipping, Accounting, Security,’;
+	title2 ’Customer Support, and Sales Departments’;
+run;
+
+/* Page253 - Variables with Different Lengths */
+/* Name (19 vs 27)*/
+data research;
+	input EmployeeID $1-9 Name $11-37 Gender $38 @40 HireDate date9. Salary;
+	format HireDate date9.;
+	datalines;
+922854076 Schoenberg, Marguerite     F 19nov1994 39800
+770434994 Addison-Hardy, Jonathon    M 23feb1992 41400
+242784883 McNaughton, Elizabeth      F 24jul1993 45000
+377882806 Tharrington, Catherine     F 28sep1994 38600
+292450691 Frangipani, Christopher    M 12aug1990 43900
+;
+
+proc print data=research;
+	title ’Research Department Employees’;
+run;
+
+/* Method1: Make it length 27, put research first */
+data dept6_1;
+	set research shipping new_accounting security customer_support sales;
+run;
+
+/* Method2: Define the length */
+data dept1_6a;
+	length Name $ 27;
+	set sales customer_support security new_accounting shipping research;
+run;
+
+proc print data=dept1_6a;
+	title ’Employees in All Departments’;
+run;
+
+/* Concatenating Data Sets Using the APPEND Procedure */
+proc print data=sales;
+	title ’Sales Department Employees’;
+run;
+
+proc print data=customer_support;
+	title ’Customer Support Department Employees’;
+run;
+
+proc append base=sales data=customer_support;
+run;
+
+proc print data=sales;
+	title ’Employees in Sales and Customer Support Departments’;
+run;
+
+/* Page257 - Data Sets with Different Variables */
+proc print data=sales;       /*There is 'Home Phone' in it*/
+	title ’Sales Department Employees’;
+run;
+
+proc print data=security;    /*There is 'Gender' in it*/
+	title ’Security Department Employees’;
+run;
+
+/* Error!!! */
+/* proc append base=sales data=security; */
+/* run; */
+
+proc append base=sales data=security force;
+run;
+
+proc print data=sales;
+	title ’Employees in the Sales and the Security Departments’;
+run;
