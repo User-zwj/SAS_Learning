@@ -105,6 +105,7 @@ proc print data=new_accounting;
 	title ’New Accounting Department Employees’;
 run;
 
+/* The datasets procedure enables you to verify the new attribute type for EmployeeID */
 proc datasets library=work; 
 	contents data=new_accounting;
 run;
